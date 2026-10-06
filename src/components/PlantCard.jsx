@@ -6,12 +6,13 @@ import {faLeaf, faSeedling, faHeart} from '@fortawesome/free-solid-svg-icons'
 // The leaf button toggles collections.
 // The parent owns all data and passes callbacks down as props.
 
-export default function PlantCard({ plant, collected, onSelect, onToggleCollect, favorites, onToggleFavorites, wishlist, onToggleWishlist}) {
+export default function PlantCard({ plant, collected, onSelect, onToggleCollect, favorites, onToggleFavorites, wishlist, onToggleWishlist }) {
+  const cardImg = plant.illustrationImg || plant.plantImg
   return (
     <article className="card plant-card" onClick={() => onSelect(plant)}>
       <div className="card-image">
-        {plant.plantImg ? (
-          <img src={plant.plantImg} alt={plant.commonName} loading="lazy" />
+        {cardImg ? (
+          <img src={cardImg} alt={plant.commonName} loading="lazy" />
         ) : (
           <div className="image-placeholder">No photo</div>
         )}

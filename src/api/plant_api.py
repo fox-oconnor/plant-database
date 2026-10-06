@@ -1,7 +1,8 @@
 import csv
 from flask import Flask, request
-from flask_cors import CORS  
-
+from flask_cors import CORS
+import os
+ADMIN_KEY = os.environ.get('PLANT_ADMIN_KEY', 'dev-only-key')
 
 app = Flask(__name__)
 CORS(app)
@@ -16,8 +17,8 @@ def load_plants(path='plants.csv'):
 		for field in LIST_FIELDS:
 			val = plant.get(field, '')
 			if isinstance(val, str):
-				plant[field] = [s.strip() for s in val.split(',') if s.strip()]	
-	return plants  
+				plant[field] = [s.strip() for s in val.split(',') if s.strip()]
+	return plants
 
 PLANTS = load_plants('plants.csv')
 
@@ -47,7 +48,7 @@ def plants():
 @app.route('/plants/search')
 def search_plants():
 	q = request.args.get('q', '').lower()
-	matches = [p for p in PLANTS 
+	matches = [p for p in PLANTS
 				if q in str(p.get('commonName', '')).lower()
 			    or q in str(p.get('scientificName', '')).lower()]
 	return {'plants' : matches}
@@ -55,7 +56,7 @@ def search_plants():
 @app.route('/plants/<int:plant_id>')
 def one_plant(plant_id):
 	for plant in PLANTS:
-		if plant['id'] == plant_id:
+		if str(plant['id']) == str(plant_id):
 			return plant
 	return {'error': 'Plant not found'}, 404
 
@@ -83,6 +84,38 @@ def add_plant():
 	SUBMISSIONS.append(new_plant)
 	save_submissions()
 	return new_plant, 201
+
+def save_plants():
+    fields = list(PLANTS[0].keys())
+    for extra in ('status', 'submittedBy'):
+        if extra not in fields:
+            fields.append(extra)
+    with open('plants.csv', 'w', newline='', encoding='utf-8') as f:
+        writer = csv.DictWriter(f, fieldnames=fields)
+        writer.writeheader()
+        for plant in PLANTS:
+            row = {k: (', '.join(v) if isinstance(v, list) else v)
+                for k, v in plant.items()}
+            writer.writerow(row)
+
+@app.route('/plants/submissions')
+def list_submissions():
+    return {'submissions': SUBMISSIONS}
+
+@app.route('/plants/submissions/<sub_id>/approve', methods=['POST'])
+def approve_submission(sub_id):
+    if request.headers.get('X-Admin-Key') != ADMIN_KEY:
+        return {'error': 'Forbidden'}, 403
+    sub = next(( s for s in SUBMISSIONS if s['id'] == sub_id), None)
+    if not sub:
+        return {'error': 'Submission not found'}, 404
+    official = {**sub, 'id': str(max(int(p['id']) for p in PLANTS) + 1), 'status': 'approved'}
+
+    PLANTS.append(official)
+    SUBMISSIONS.remove(sub)
+    save_plants()
+    save_submissions()
+    return official, 200
 
 
 
