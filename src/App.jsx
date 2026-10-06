@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react'
+ import { useState, useEffect, useMemo } from 'react'
 import PlantCard from './components/PlantCard.jsx'
 import PlantDetail from './components/PlantDetail.jsx'
 import PlantForm from './components/PlantForm.jsx'
@@ -43,7 +43,8 @@ export default function App() {
   const [collection, setCollection] = useLocalStorage('plant-collection', [])
   const [favorites, setFavorites] = useLocalStorage('fav-collection', [])
   const [wishlist, setWishlist] = useLocalStorage('wish-collection', [])
-
+  const [plants, setPlants] = useState([]);
+  const [loading, setLoading] = useState(true);
   const debouncedQuery = useDebounce(query, 400)
 
   // Fetch whenever the debounced search text changes (or on retry).
@@ -55,23 +56,16 @@ export default function App() {
     async function load() {
       setStatus('loading')
       try {
-        let plants
-        if (hasApiKey) {
-          plants = await searchSpecies(debouncedQuery)
-        } else {
-          const q = debouncedQuery.trim().toLowerCase()
-          plants = samplePlants.filter((p) =>
-            (p.commonName + ' ' + p.scientificName).toLowerCase().includes(q)
-          )
-        }
+        const res = await fetch(`http://localhost:5001/plants/search?q=${encodeURIComponent(debouncedQuery)}`)
+        const data = await res.json()
         if (!cancelled) {
-          setResults(plants)
+          setResults(data.plants)
           setStatus('success')
         }
       } catch {
         if (!cancelled) setStatus('error')
       }
-    }
+  }
 
     load()
     return () => {
@@ -125,9 +119,6 @@ export default function App() {
         <div>
           <h1>My Plant Database</h1>
           <p className="subtitle">
-            {hasApiKey
-              ? 'Browsing 10,000+ real plants via the Perenual API'
-              : 'Demo mode — add a free Perenual API key for real data (see README)'}
           </p>
         </div>
         <nav className="tabs">

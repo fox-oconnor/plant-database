@@ -52,8 +52,8 @@ export default function PlantDetail({ plant, onClose, collected, onToggleCollect
           ×
         </button>
 
-        {shown.imageUrl && (
-          <img className="modal-image" src={shown.imageUrl} alt={shown.commonName} />
+        {shown.plantImg && (
+          <img className="modal-image" src={shown.plantImg} alt={shown.commonName} />
         )}
         <div className="card-title">
           <h2>{shown.commonName}</h2>

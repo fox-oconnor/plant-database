@@ -10,8 +10,8 @@ export default function PlantCard({ plant, collected, onSelect, onToggleCollect,
   return (
     <article className="card plant-card" onClick={() => onSelect(plant)}>
       <div className="card-image">
-        {plant.imageUrl ? (
-          <img src={plant.imageUrl} alt={plant.commonName} loading="lazy" />
+        {plant.plantImg ? (
+          <img src={plant.plantImg} alt={plant.commonName} loading="lazy" />
         ) : (
           <div className="image-placeholder">No photo</div>
         )}

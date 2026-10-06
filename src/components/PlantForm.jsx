@@ -1,6 +1,7 @@
 import { useState } from 'react'
 
-// Form for adding YOUR OWN plant to the collection (not from the API).
+// Form for adding YOUR OWN plant to the collection.
+// Share to community database via selecting share checkbox.
 // Produces the same normalized shape the rest of the app uses.
 
 const emptyForm = {
@@ -14,13 +15,20 @@ const emptyForm = {
 
 export default function PlantForm({ onAdd }) {
   const [form, setForm] = useState(emptyForm)
+  const [share, setShare] = useState(false)
+  const [error, setError] = useState('')
 
   const update = (field) => (e) =>
     setForm({ ...form, [field]: e.target.value })
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     if (!form.commonName.trim()) return
+    if (share && !form.scientificName.trim()){
+      setError('A scientific name is required to submit to the community database')
+      return
+    }
+    setError('')
     onAdd({
       id: `custom-${Date.now()}`,
       commonName: form.commonName.trim(),
@@ -34,7 +42,30 @@ export default function PlantForm({ onAdd }) {
       notes: form.notes.trim() || null,
       source: 'custom',
     })
+    if (share){
+      try {
+        const res = await fetch('http://localhost:5001/plants', {
+          method: 'POST',
+          headers: {'Content-Type' : 'application/json'},
+          body: JSON.stringify({
+            commonName: form.commonName.trim(),
+            scientificName: form.scientificName.trim(),
+            watering: form.watering,
+            sunlight: form.sunlight,
+            submittedBy: 'Juri'
+          })
+        })
+        if (!res.ok) throw new Error('submission failed')
+        const saved = await res.json()
+        console.log('Queued as', saved.id)
+      } catch {
+        setError('Saved to your collection, but the community submission failed -- is the API running?')
+        return
+      }
+  }
+
     setForm(emptyForm)
+    setShare(false)
   }
 
   return (
@@ -51,8 +82,9 @@ export default function PlantForm({ onAdd }) {
             required
           />
         </label>
+
         <label>
-          Species
+          Species (Scientific Name)
           <input
             value={form.scientificName}
             onChange={update('scientificName')}
@@ -62,6 +94,7 @@ export default function PlantForm({ onAdd }) {
       </div>
 
       <div className="form-row">
+
         <label>
           Watering
           <select value={form.watering} onChange={update('watering')}>
@@ -70,6 +103,7 @@ export default function PlantForm({ onAdd }) {
             <option>Minimum</option>
           </select>
         </label>
+
         <label>
           Light
           <select value={form.sunlight} onChange={update('sunlight')}>
@@ -78,6 +112,7 @@ export default function PlantForm({ onAdd }) {
             <option value="full_shade">Full shade</option>
           </select>
         </label>
+
         <label>
           Placement
           <select value={form.indoor} onChange={update('indoor')}>
@@ -96,6 +131,17 @@ export default function PlantForm({ onAdd }) {
           rows="2"
         />
       </label>
+
+      <label className="share-row">
+        <input
+          type="checkbox"
+          checked={share}
+          onChange={(e) => setShare(e.target.checked)}
+        />
+        Also submit to the community database
+      </label>
+
+      {error && <p className="form-error">{error}</p>}
 
       <button className="btn primary" type="submit">
         Add to my collection
