@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react'
-import { hasApiKey, getSpeciesDetails } from '../api/perenual.js'
 import { sunlightList } from '../utils/format.js'
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 import {faLeaf, faSeedling, faHeart} from '@fortawesome/free-solid-svg-icons'
@@ -87,7 +86,7 @@ export default function PlantDetail({ plant, onClose, collected, onToggleCollect
           >
             <FontAwesomeIcon icon={faSeedling} />
           </button>
-        </div>  
+        </div>
         {shown.scientificName && <p className="species">{shown.scientificName}</p>}
         {status === 'loading' && <p className="muted">Loading details…</p>}
         {status === 'error' && (

@@ -1,4 +1,4 @@
-# My Plant Database
+# Gaia's Garden
 
 A small, searchable, data-driven React app for browsing houseplants and
 keeping your own collection. Built with Vite + React.
@@ -7,6 +7,7 @@ keeping your own collection. Built with Vite + React.
 
 ```bash
 npm install
+python src/api/plant_api.py
 npm run dev
 ```
 
@@ -19,14 +20,19 @@ The app browses the plant_api created for this project.
 ## Project tour
 
 ```
+api/
+  plant_api.py              # Flask backend (port 5001)
+  plants.csv                # official plant database
+  user_plants.csv           # community submissions
+  harvest_images.py         # photo harvester (Wikimedia Commons)
+  harvest_illustrations.py  # botanical illustration harvester (Wikimedia Commons)
+  scraper.py                # NC Extension Gardener scraper (hardiness, care, propagation)
+
 src/
   main.jsx                  # entry point, mounts <App />
   App.jsx                   # state machine: tabs, search, filters,
                             # loading/error/success states, collection
   index.css                 # all styling
-  api/
-    plant_api.py            # API calls + normalization into one shape
-    harvest_xxx.py          # Scrapers - one is used to collect photographs of the plants, the other, botanical plants.
   hooks/
     useDebounce.js          # don't hammer the API on every keystroke
     useLocalStorage.js      # collection persists across refreshes
@@ -45,10 +51,9 @@ src/
 - Pagination or infinite scroll through API results
 - Sort options (A–Z, thirstiest first)
 - Watering reminders: per-plant "water every N days" + overdue highlighting
-- Care-guide tab in the detail modal (`species-care-guide-list` endpoint)
+- Care-guide tab in the detail modal
 - Export the collection as JSON
 - Dark mode toggle
-- Deploy it (Vercel/Netlify) — remember the API key becomes a build env var
 
 ## Build for production
 

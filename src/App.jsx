@@ -115,9 +115,7 @@ export default function App() {
     <div className="app">
       <header>
         <div>
-          <h1>Gaia's Garden</h1>
-          <p className="subtitle">
-          </p>
+          <h1 className="gg">🌸 Gaia's Garden 🌸</h1>
         </div>
         <nav className="tabs">
           <button
