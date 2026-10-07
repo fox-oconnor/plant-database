@@ -5,8 +5,6 @@ import PlantForm from './components/PlantForm.jsx'
 import FilterBar from './components/FilterBar.jsx'
 import { useLocalStorage } from './hooks/useLocalStorage.js'
 import { useDebounce } from './hooks/useDebounce.js'
-import { hasApiKey, searchSpecies } from './api/perenual.js'
-import { samplePlants } from './data/samplePlants.js'
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 import {faLeaf, faSeedling, faHeart} from '@fortawesome/free-solid-svg-icons'
 
@@ -56,7 +54,7 @@ export default function App() {
     async function load() {
       setStatus('loading')
       try {
-        const res = await fetch(`http://localhost:5001/plants/search?q=${encodeURIComponent(debouncedQuery)}`)
+        const res = await fetch(`http://192.168.12.8:5001/plants/search?q=${encodeURIComponent(debouncedQuery)}`)
         const data = await res.json()
         if (!cancelled) {
           setResults(data.plants)
@@ -117,7 +115,7 @@ export default function App() {
     <div className="app">
       <header>
         <div>
-          <h1>My Plant Database</h1>
+          <h1>Gaia's Garden</h1>
           <p className="subtitle">
           </p>
         </div>
@@ -144,7 +142,7 @@ export default function App() {
             className={tab === 'wishlist' ? 'tab active' : 'tab'}
             onClick={() => setTab('wishlist')}
           >
-            Wishlist ({wishlist.length}) 
+            Wishlist ({wishlist.length})
           </button>
         </nav>
       </header>
@@ -175,8 +173,7 @@ export default function App() {
             <div className="state-box error">
               <h2>Something went wrong</h2>
               <p>
-                We couldn't load plants just now. Check your connection
-                {hasApiKey && ' and API key'}, then try again.
+                We couldn't load plants just now. Please check your connection, then try again.
               </p>
               <button
                 className="btn primary"
@@ -279,7 +276,7 @@ export default function App() {
             <div className="state-box">
               <h2>Your favorites is empty</h2>
               <p>
-                Tap the <FontAwesomeIcon icon={faHeart} /> on any plant in Browse to save it here, or add 
+                Tap the <FontAwesomeIcon icon={faHeart} /> on any plant in Browse to save it here, or add
                 your own with the button above.
               </p>
             </div>
@@ -320,7 +317,7 @@ export default function App() {
         {wishlist.length === 0 ? (
           <div className="state-box">
             <h2>Your wishlist is empty</h2>
-            <p> Tap the <FontAwesomeIcon icon={faSeedling} /> on any plant in Browse to save it here, or add 
+            <p> Tap the <FontAwesomeIcon icon={faSeedling} /> on any plant in Browse to save it here, or add
               your own with the button above.
             </p>
           </div>

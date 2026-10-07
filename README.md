@@ -12,22 +12,9 @@ npm run dev
 
 Then open the URL Vite prints (usually http://localhost:5173).
 
-## Use real plant data (free)
+## Use real plant data 
 
-The app browses the [Perenual plant API](https://perenual.com/docs/api)
-— 10,000+ species with photos. Without a key it runs in demo mode on
-bundled sample data.
-
-1. Sign up at https://perenual.com/ (free)
-2. Open your API dashboard and copy your key
-3. Copy `.env.example` to `.env` and paste the key in
-4. Restart the dev server
-
-```bash
-cp .env.example .env
-# edit .env, then:
-npm run dev
-```
+The app browses the plant_api created for this project. 
 
 ## Project tour
 
@@ -38,9 +25,8 @@ src/
                             # loading/error/success states, collection
   index.css                 # all styling
   api/
-    perenual.js             # API calls + normalization into one shape
-  data/
-    samplePlants.js         # demo data (same shape as API results)
+    plant_api.py            # API calls + normalization into one shape
+    harvest_xxx.py          # Scrapers - one is used to collect photographs of the plants, the other, botanical plants.
   hooks/
     useDebounce.js          # don't hammer the API on every keystroke
     useLocalStorage.js      # collection persists across refreshes
@@ -53,21 +39,8 @@ src/
     PlantForm.jsx           # add your own plant to the collection
 ```
 
-## How it maps to the FE102 rubric
 
-- **Real data from an API** — `api/perenual.js` fetches the species list
-  and per-plant details; everything is normalized so components never
-  care where data came from.
-- **Clean grid of reusable cards** — `PlantCard` renders every plant in
-  both Browse and My Collection.
-- **Search + filters** — `FilterBar` (debounced text search hits the API;
-  indoor/watering/light filters apply instantly, client-side, no reload).
-- **Instant UI updates** — filters derive from state via `useMemo`;
-  typing updates the grid as soon as the debounced query resolves.
-- **All four states** — loading skeletons, "no plants found" empty state,
-  error box with retry button, and the normal success grid.
-
-## Ideas to build next
+## Plans to build next
 
 - Pagination or infinite scroll through API results
 - Sort options (A–Z, thirstiest first)

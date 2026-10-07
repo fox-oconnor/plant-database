@@ -1,20 +1,4 @@
 #!/usr/bin/env python3
-"""
-Plant image harvester — fills plantImg, photoCredit, photoLicense
-from Wikimedia Commons (via Wikipedia page images).
-
-Usage:
-    python3 harvest_images.py plants.csv
-    python3 harvest_images.py plants.csv --out plants_with_images.csv
-
-Reads the CSV, looks up each plant by scientificName (falls back to
-commonName), and writes back an enriched CSV with the three image
-columns filled in. Existing values are left alone (won't overwrite
-your own photos or hand-picked credits).
-
-Only stdlib — no pip install needed.
-"""
-
 import argparse
 import csv
 import html
